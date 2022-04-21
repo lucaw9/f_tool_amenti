@@ -3,12 +3,13 @@
 # FTool by Amenti and Garu
 This is a tool made with [AutoIt] that automates the keystroke for the game FlyFF inspired by Ftool Extended 0.9a.
 Original 1.0 Version by Garu: https://github.com/davidgaroro/ftool-by-garu
+
 Development since then by Amenti
 
 [AutoIt]: https://www.autoitscript.com/
 
 <p align="center">
-    <img src="https://i.imgur.com/N767csZ.png">
+    <img src="https://github.com/lucaw9/f_tool_amenti/blob/master/ftool_preview.png">
 </p>
 
 ## Features added since 1.0
