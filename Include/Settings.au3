@@ -14,11 +14,11 @@ Func _IniSave()
     $sSkill = GUICtrlRead($g_aSpammers[$i][$g_eSpamSkill])
     If $sSkill = " " Then $sSkill = ""
 
-    ; Save window title, interval, icons, FKey, Skill
+    ; Save window title, interval, icon, Hotkey, FKey, Skill
     IniWrite($sFilePath, $sSection, "WindowTitle", GUICtrlRead($g_aSpammers[$i][$g_eSpamWindow]))
     IniWrite($sFilePath, $sSection, "Interval", GUICtrlRead($g_aSpammers[$i][$g_eSpamInterval]))
 	IniWrite($sFilePath, $sSection, "Icon1", $g_aSpammers[$i][$g_eIcon1Path])
-	IniWrite($sFilePath, $sSection, "Icon2", $g_aSpammers[$i][$g_eIcon2Path])
+	IniWrite($sFilePath, $sSection, "Hotkey", $g_aSpammers[$i][$g_eHotkey])
     IniWrite($sFilePath, $sSection, "FKey", $sFKey)
     IniWrite($sFilePath, $sSection, "Skill", $sSkill)
   Next
@@ -82,13 +82,10 @@ Func _IniLoad()
 	GUICtrlSetImage($g_aSpammers[$i][$g_eIcon1], @ScriptDir & "\Icons\" & $iIcon1)
 	$g_aSpammers[$i][$g_eIcon1Path] = $iIcon1
 
-	; Set icon2
-    $iIcon2 = IniRead($sFilePath, $sSection, "Icon2", "")
-	If $iIcon2 = "" Then
-	   $iIcon2 = "none.jpg"
-    EndIf
-    GUICtrlSetImage($g_aSpammers[$i][$g_eIcon2], @ScriptDir & "\Icons\" & $iIcon2)
-	$g_aSpammers[$i][$g_eIcon2Path] = $iIcon2
+	; Set Hotkey
+    $iHotkey = IniRead($sFilePath, $sSection, "Hotkey", "-")
+	GUICtrlSetData($g_aSpammers[$i][$g_eHotkeyLabel], HexToKey($iHotkey))
+	$g_aSpammers[$i][$g_eHotkey] = $iHotkey
 
     ; Set fkey
     $sFKey = IniRead($sFilePath, $sSection, "FKey", " ")

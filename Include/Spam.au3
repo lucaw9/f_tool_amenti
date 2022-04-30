@@ -2,19 +2,24 @@
 
 Local Const $iIconPath = @ScriptDir & "\Icons\"
 
-Func _OnButtonClickSpam()
-  ; Get spammer index
-  Local $iSpamIndex = GUICtrlRead(@GUI_CtrlId - 2)
+Func _OnButtonClickSpam($index = -1)
+   ; Get spammer index
+   Local $iSpamIndex = 0
+   If @NumParams = 1 Then
+	  $iSpamIndex = $index
+   Else
+	  $iSpamIndex = GUICtrlRead(@GUI_CtrlId - 2)
+   EndIf
 
   ; Get spammer state
-  Local $bSpammer = ($g_aSpammers[$iSpamIndex][$g_eSpamPID] <> "")
+   Local $bSpammer = ($g_aSpammers[$iSpamIndex][$g_eSpamPID] <> "")
 
   ; Start or Stop spammer
-  If $bSpammer = False Then
-    _SpamStart($iSpamIndex)
-  Else
-    _SpamStop($iSpamIndex)
-  EndIf
+   If $bSpammer = False Then
+	  _SpamStart($iSpamIndex)
+   Else
+	  _SpamStop($iSpamIndex)
+   EndIf
 EndFunc   ;==>_OnButtonClick
 
 Func _OnIconClick1()
@@ -34,21 +39,31 @@ Func _OnIconClick1()
    EndIf
 EndFunc
 
-Func _OnIconClick2()
+Func _OnButtonClickHotkey()
    ; Get spammer index
-   Local $iSpamIndex = GUICtrlRead(@GUI_CtrlId - 8)
-   Local $sFileOpenDialog = FileOpenDialog("Pick an icon", $iIconPath, "JPEG (*.jpg;*.jpeg;*.jpe;*.jfif)")
-   If $sFileOpenDialog <> "" Then
-	  If not @error Then
-		 If StringInStr($sFileOpenDialog, $iIconPath) <> 0 Then
-			Local $iFilename = StringReplace($sFileOpenDialog, $iIconPath, "")
-			GUICtrlSetImage($g_aSpammers[$iSpamIndex][$g_eIcon2], $sFileOpenDialog)
-			$g_aSpammers[$iSpamIndex][$g_eIcon2Path] = $iFilename
-		 Else
-			MsgBox(0, "Invalid path!", "File has to be located in Icons folder!")
+   Local $iSpamIndex = GUICtrlRead(@GUI_CtrlId - 10)
+   SplashTextOn("Edit Hotkey", "Press a key." & @CRLF & "SHIFT + this key will be the combination to activate this spammer." & @CRLF & "Press - to remove this hotkey." & @CRLF & "" & @CRLF & "Additional info:" & @CRLF & "Some keys might not work." & @CRLF & "When setting the same hotkey for multiple spammers, only the first one will be activated.", $iWinWidth, 150, $iWinLeft, $iWinTop+100, 0, "", 8)
+   Local $pressed = False
+   ; loop until key is pressed
+   While Not $pressed
+	  ; check all possible keys
+	  For $h = 8 To 254
+		 Local $hex = Hex($h)
+		 If _IsPressed($hex, $hDLL) Then
+			; if not "-" -> use this hotkey
+			If $hex <> Hex(189) Then
+			   $g_aSpammers[$iSpamIndex][$g_eHotkey] = $hex
+			   GUICtrlSetData($g_aSpammers[$iSpamIndex][$g_eHotkeyLabel], HexToKey($hex))
+			Else ; "-" -> remove this hotkey
+			   $g_aSpammers[$iSpamIndex][$g_eHotkey] = "-"
+			   GUICtrlSetData($g_aSpammers[$iSpamIndex][$g_eHotkeyLabel], "-")
+			EndIf
+			$pressed = True
+			ExitLoop
 		 EndIf
-	  EndIf
-   EndIf
+	  Next
+   WEnd
+   SplashOff()
 EndFunc
 
 Func _SpamStart($iSpamIndex)
@@ -62,8 +77,8 @@ Func _SpamStart($iSpamIndex)
   Local $iColorCtrlId = $g_aSpammers[$iSpamIndex][$g_eSpamColor]
   Local $iIcon1File = $g_aSpammers[$iSpamIndex][$g_eIcon1Path]
   Local $iIcon1 = $g_aSpammers[$iSpamIndex][$g_eIcon1]
-  Local $iIcon2File = $g_aSpammers[$iSpamIndex][$g_eIcon2Path]
-  Local $iIcon2 = $g_aSpammers[$iSpamIndex][$g_eIcon2]
+  Local $iHotkeyBtnCtrlId = $g_aSpammers[$iSpamIndex][$g_eHotkeyButton]
+
 
   ; Get input data
   Local $sWindow = _getWindowNameFromCharacter(GUICtrlRead($iWindowCtrlId))
@@ -109,14 +124,11 @@ Func _SpamStart($iSpamIndex)
   GUICtrlSetState($iSkillCtrlId, $GUI_DISABLE)
   GUICtrlSetState($iDefColorCtrlId, $GUI_HIDE)
   GUICtrlSetState($iColorCtrlId, $GUI_SHOW)
+  GUICtrlSetState($iHotkeyBtnCtrlId, $GUI_DISABLE)
   If $iIcon1File = "none.jpg" Then
 	 GUICtrlSetState($iIcon1, $GUI_HIDE)
   EndIf
-  If $iIcon2File = "none.jpg" Then
-	 GUICtrlSetState($iIcon2, $GUI_HIDE)
-  EndIf
   GUICtrlSetState($iIcon1, $GUI_DISABLE)
-  GUICtrlSetState($iIcon2, $GUI_DISABLE)
 
   GUICtrlSetBkColor($iButtonCtrlId, $COLOR_GREEN)
 
@@ -148,8 +160,7 @@ Func _SpamStop($iSpamIndex)
   Local $iColorCtrlId = $g_aSpammers[$iSpamIndex][$g_eSpamColor]
   Local $iIcon1File = $g_aSpammers[$iSpamIndex][$g_eIcon1Path]
   Local $iIcon1 = $g_aSpammers[$iSpamIndex][$g_eIcon1]
-  Local $iIcon2File = $g_aSpammers[$iSpamIndex][$g_eIcon2Path]
-  Local $iIcon2 = $g_aSpammers[$iSpamIndex][$g_eIcon2]
+  Local $iHotkeyBtnCtrlId = $g_aSpammers[$iSpamIndex][$g_eHotkeyButton]
 
   ; Clear window title
   $g_aSpammers[$iSpamIndex][$g_eSpamWindowTitle] = ""
@@ -166,14 +177,11 @@ Func _SpamStop($iSpamIndex)
   GUICtrlSetState($iSkillCtrlId, $GUI_ENABLE)
   GUICtrlSetState($iColorCtrlId, $GUI_HIDE)
   GUICtrlSetState($iDefColorCtrlId, $GUI_SHOW)
+  GUICtrlSetState($iHotkeyBtnCtrlId, $GUI_ENABLE)
   If $iIcon1File = "none.jpg" Then
 	 GUICtrlSetState($iIcon1, $GUI_SHOW)
   EndIf
-  If $iIcon2File = "none.jpg" Then
-	 GUICtrlSetState($iIcon2, $GUI_SHOW)
-  EndIf
   GUICtrlSetState($iIcon1, $GUI_ENABLE)
-  GUICtrlSetState($iIcon2, $GUI_ENABLE)
 
   GUICtrlSetBkColor($iButtonCtrlId, $COLOR_DARK1)
 EndFunc   ;==>_SpamStop

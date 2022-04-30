@@ -28,6 +28,12 @@ Development since then by Amenti
 ## 2.1
 - Added horizontal orientation. Adjustable in settings
 
+## 2.2
+- Added hotkeys: Use SHIFT + specified key to activate a spammer
+
+## Full 2.2 Zip File including .exe-Files now available
+
+
 ## Built With
 AutoIt v3.3.14.5
 
