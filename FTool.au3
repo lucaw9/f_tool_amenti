@@ -22,7 +22,7 @@ Opt("TrayMenuMode", 1) ; Disable default tray menu
 Opt("TrayOnEventMode", 1) ; Enable OnEvent functions notifications for the tray
 
 ; GUI Window variables
-Local const $sTitle = "FTool by Amenti 2.1"
+Local const $sTitle = "FTool by Amenti 2.2"
 Local $iWinWidth = 286
 Local $iWinHeight = 420
 Local $iWinLeft = -1
