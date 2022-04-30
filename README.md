@@ -6,6 +6,11 @@ Original 1.0 Version by Garu: https://github.com/davidgaroro/ftool-by-garu
 
 Development since then by Amenti
 
+
+## Full 2.2 Zip File including .exe-Files now available
+[Click here!](https://github.com/lucaw9/f_tool_amenti/blob/master/f_tool_amenti_v2_2.zip)
+
+
 [AutoIt]: https://www.autoitscript.com/
 
 <p align="center">
@@ -30,9 +35,6 @@ Development since then by Amenti
 
 ## 2.2
 - Added hotkeys: Use SHIFT + specified key to activate a spammer
-
-## Full 2.2 Zip File including .exe-Files now available
-
 
 ## Built With
 AutoIt v3.3.14.5
