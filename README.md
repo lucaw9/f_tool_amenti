@@ -32,7 +32,7 @@ Development since then by Amenti
 - Added hotkeys: Use SHIFT + specified key to activate a spammer
 
 ## Full 2.2 Zip File including .exe-Files now available
-[https://github.com/lucaw9/f_tool_amenti/blob/master/f_tool_amenti_v2_2.zip](Click here!)
+(Click here!)[https://github.com/lucaw9/f_tool_amenti/blob/master/f_tool_amenti_v2_2.zip]
 
 ## Built With
 AutoIt v3.3.14.5
