@@ -1,9 +1,9 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=Resources\aibatt.ico
 #AutoIt3Wrapper_Res_Description=FTool by Amenti
-#AutoIt3Wrapper_Res_Fileversion=2.2
+#AutoIt3Wrapper_Res_Fileversion=2.3
 #AutoIt3Wrapper_Res_ProductName=FTool by Amenti
-#AutoIt3Wrapper_Res_ProductVersion=2.2
+#AutoIt3Wrapper_Res_ProductVersion=2.3
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
 ; Mandatory execution as administrator
@@ -22,12 +22,13 @@ Opt("TrayMenuMode", 1) ; Disable default tray menu
 Opt("TrayOnEventMode", 1) ; Enable OnEvent functions notifications for the tray
 
 ; GUI Window variables
-Local const $sTitle = "FTool by Amenti 2.2"
+Local const $sTitle = "FTool by Amenti 2.3"
 Local $iWinWidth = 286
 Local $iWinHeight = 420
 Local $iWinLeft = -1
 Local $iWinTop = -1
 Local $iOrientation = "vertical"
+Local $iRows = 1
 
 ; Colors
 Global $COLOR_GREEN = 0x0f801b
@@ -40,16 +41,19 @@ Global $COLOR_BLACK = 0x000000
 ; Read from settings.ini
 _ReadWinPosition($iWinLeft, $iWinTop)
 _ReadOrientation($iOrientation)
+_ReadRows($iRows)
 Global $g_Tabs = _getTabArray() ; Two-dimensional: [ArrayNumber][0 = Name, 1 = Spammers, 2 = MultiPressers]
 
-Local $iMaxItems = _CalcBiggestTab()
+Local $iMaxDepth = 1
+Local $iMaxRows = 1
+_CalcBiggestTab($iMaxDepth, $iMaxRows, $iRows)
 
 If $iOrientation <> "horizontal" Then
-   $iWinHeight = 20 + ($iMaxItems * 99) + 6
-   $iWinWidth = 286
+   $iWinHeight = 20 + ($iMaxDepth * 99) + 6
+   $iWinWidth = ($iMaxRows * 280) + 6
 Else
-   $iWinWidth = (_CalcBiggestTab() * 280) + 6
-   $iWinHeight = 20 + 99 + 6
+   $iWinWidth = ($iMaxDepth * 280) + 6
+   $iWinHeight = 20 + ($iMaxRows * 99) + 6
 EndIf
 
 
@@ -86,128 +90,160 @@ GUICtrlSetOnEvent(-1, "_OnSettingsClick")
 
 
 #Region TABS & SPAMMERS
-	GUICtrlCreateTab(0, 0, $iWinWidth + 2, $iWinHeight + 1)
+   GUICtrlCreateTab(0, 0, $iWinWidth + 2, $iWinHeight + 1)
 
-	; GUI variables
-	Local Const $iCol1=80, $iCol2=227, $iCol3=7, $iLeft = 6, $iTop = 26
-	Local $iSpaceY=99, $iSpaceX=280
+   ; GUI variables
+   Local Const $iCol1=80, $iCol2=227, $iCol3=7, $iLeft = 6, $iTop = 26
+   Local $iSpaceY=99, $iSpaceX=280
 
-    Local $spammerNumber = 0
-	Local $presserNumber = 0
-	For $i = 0 To UBound($g_Tabs) - 1
-		GUICtrlCreateTabItem($g_Tabs[$i][0])
+   ; index of spammer/presser considering all tabs
+   Local $spammerNumber = 0
+   Local $presserNumber = 0
 
-		If $iOrientation <> "horizontal" Then
-		 ;vertical
-		 $iSpaceX = 0
-	    Else
-		 ;horizontal
-		 $iSpaceY = 0
-	    EndIf
+   For $i = 0 To UBound($g_Tabs) - 1
+	  GUICtrlCreateTabItem($g_Tabs[$i][0])
 
-	    ;Spammers
-		For $j = 0 To $g_Tabs[$i][1] - 1
+	  ; Position of worker in this tab
+	  $iPosH = 0
+	  $iPosV = 0
 
-			; Group Color (+ Hidden Color)
-			$g_aSpammers[$spammerNumber][$g_eDefColor] =  GUICtrlCreateLabel("", $iLeft + ($j * $iSpaceX), $iTop + ($j * $iSpaceY), 273, 92)
-			GUICtrlSetBkColor(-1, $COLOR_DARK2)
-			GUICtrlSetState(-1, $GUI_DISABLE)
+	  ;Spammers
+	  For $j = 0 To $g_Tabs[$i][1] - 1
 
-			$g_aSpammers[$spammerNumber][$g_eSpamColor] =  GUICtrlCreateLabel("", $iLeft + ($j * $iSpaceX), $iTop + ($j * $iSpaceY), 273, 92)
-			GUICtrlSetBkColor(-1, $COLOR_GREEN)
-			GUICtrlSetState(-1, $GUI_DISABLE)
-			GUICtrlSetState(-1, $GUI_HIDE)
+		 ; Group Color (+ Hidden Color)
+		 $g_aSpammers[$spammerNumber][$g_eDefColor] =  GUICtrlCreateLabel("", $iLeft + ($iPosH * $iSpaceX), $iTop + ($iPosV * $iSpaceY), 273, 92)
+		 GUICtrlSetBkColor(-1, $COLOR_DARK2)
+		 GUICtrlSetState(-1, $GUI_DISABLE)
 
-			GUICtrlCreateGroup("", $iLeft + ($j * $iSpaceX), $iTop-6 + ($j * $iSpaceY), 274, 101)
+		 $g_aSpammers[$spammerNumber][$g_eSpamColor] =  GUICtrlCreateLabel("", $iLeft + ($iPosH * $iSpaceX), $iTop + ($iPosV * $iSpaceY), 273, 92)
+		 GUICtrlSetBkColor(-1, $COLOR_GREEN)
+		 GUICtrlSetState(-1, $GUI_DISABLE)
+		 GUICtrlSetState(-1, $GUI_HIDE)
 
-			; Hidden label to save spammer index
-			GUICtrlCreateLabel($spammerNumber, -99, -99)
-			GUICtrlSetState(-1, $GUI_HIDE)
+		 GUICtrlCreateGroup("", $iLeft + ($iPosH * $iSpaceX), $iTop-6 + ($iPosV * $iSpaceY), 274, 101)
 
-			; Start button
-			GUICtrlCreateLabel("Spammer", $iLeft + $iCol3 + ($j * $iSpaceX), $iTop+7 + ($j * $iSpaceY))
-			$g_aSpammers[$spammerNumber][$g_eSpamButton] = GUICtrlCreateButton("Start", $iLeft+7 + ($j * $iSpaceX), $iTop+21 + ($j * $iSpaceY), 64, 64)
-			GUICtrlSetOnEvent(-1, "_OnButtonClickSpam")
-			GUICtrlSetBkColor(-1, $COLOR_DARK1)
+		 ; Hidden label to save spammer index
+		 GUICtrlCreateLabel($spammerNumber, -99, -99)
+		 GUICtrlSetState(-1, $GUI_HIDE)
 
-			; Select window
-			GUICtrlCreateLabel("Window", $iLeft+$iCol1 + ($j * $iSpaceX), $iTop+7 + ($j * $iSpaceY))
-			$g_aSpammers[$spammerNumber][$g_eSpamWindow] = GUICtrlCreateCombo($g_sSelectWindow, $iLeft+$iCol1 + ($j * $iSpaceX), $iTop+22 + ($j * $iSpaceY), 138, 20, $CBS_DROPDOWNLIST)
+		 ; Start button
+		 GUICtrlCreateLabel("Spammer", $iLeft + $iCol3 + ($iPosH * $iSpaceX), $iTop+7 + ($iPosV * $iSpaceY))
+		 $g_aSpammers[$spammerNumber][$g_eSpamButton] = GUICtrlCreateButton("Start", $iLeft+7 + ($iPosH * $iSpaceX), $iTop+21 + ($iPosV * $iSpaceY), 64, 64)
+		 GUICtrlSetOnEvent(-1, "_OnButtonClickSpam")
+		 GUICtrlSetBkColor(-1, $COLOR_DARK1)
 
-			; Interval
-			GUICtrlCreateLabel("Interval (ms)", $iLeft+$iCol1 + ($j * $iSpaceX), $iTop+49 + ($j * $iSpaceY))
-			$g_aSpammers[$spammerNumber][$g_eSpamInterval] = GUICtrlCreateInput("0", $iLeft+$iCol1 + ($j * $iSpaceX), $iTop+64 + ($j * $iSpaceY), 56, 20, $ES_NUMBER)
-			GUICtrlSetColor(-1, $COLOR_BLACK)
-			GUICtrlSetBkColor(-1, $COLOR_WHITE)
+		 ; Select window
+		 GUICtrlCreateLabel("Window", $iLeft+$iCol1 + ($iPosH * $iSpaceX), $iTop+7 + ($iPosV * $iSpaceY))
+		 $g_aSpammers[$spammerNumber][$g_eSpamWindow] = GUICtrlCreateCombo($g_sSelectWindow, $iLeft+$iCol1 + ($iPosH * $iSpaceX), $iTop+22 + ($iPosV * $iSpaceY), 138, 20, $CBS_DROPDOWNLIST)
 
-			; Icon1
-			$g_aSpammers[$spammerNumber][$g_eIcon1] = GUICtrlCreatePic("", $iLeft+$iCol1 + 62 + ($j * $iSpaceX), $iTop+52 + ($j * $iSpaceY), 31, 31)
-			$g_aSpammers[$spammerNumber][$g_eIcon1Path] = ""
-			GUICtrlSetOnEvent(-1, "_OnIconClick1")
+		 ; Interval
+		 GUICtrlCreateLabel("Interval (ms)", $iLeft+$iCol1 + ($iPosH * $iSpaceX), $iTop+49 + ($iPosV * $iSpaceY))
+		 $g_aSpammers[$spammerNumber][$g_eSpamInterval] = GUICtrlCreateInput("0", $iLeft+$iCol1 + ($iPosH * $iSpaceX), $iTop+64 + ($iPosV * $iSpaceY), 56, 20, $ES_NUMBER)
+		 GUICtrlSetColor(-1, $COLOR_BLACK)
+		 GUICtrlSetBkColor(-1, $COLOR_WHITE)
 
-			; Hotkey
-			GUICtrlCreateLabel("Hotkey:", $iLeft+$iCol1 + 99 + ($j * $iSpaceX), $iTop+49 + ($j * $iSpaceY))
-			$g_aSpammers[$spammerNumber][$g_eHotkeyLabel] = GUICtrlCreateInput("-", $iLeft+$iCol1 + 99 + ($j * $iSpaceX), $iTop+64 + ($j * $iSpaceY), 19, 20)
-			GUICtrlSetState(-1, $GUI_DISABLE)
-			$g_aSpammers[$spammerNumber][$g_eHotkeyButton] = GUICtrlCreateButton("+", $iLeft+$iCol1 + 120 + ($j * $iSpaceX), $iTop+64 + ($j * $iSpaceY), 14, 20)
-			GUICtrlSetOnEvent(-1, "_OnButtonClickHotkey")
-			GUICtrlSetBkColor(-1, $COLOR_DARK1)
+		 ; Icon1
+		 $g_aSpammers[$spammerNumber][$g_eIcon1] = GUICtrlCreatePic("", $iLeft+$iCol1 + 62 + ($iPosH * $iSpaceX), $iTop+52 + ($iPosV * $iSpaceY), 31, 31)
+		 $g_aSpammers[$spammerNumber][$g_eIcon1Path] = ""
+		 GUICtrlSetOnEvent(-1, "_OnIconClick1")
 
-			; F-Key
-			GUICtrlCreateLabel("F-Key", $iLeft+$iCol2 + ($j * $iSpaceX), $iTop+7 + ($j * $iSpaceY))
-			$g_aSpammers[$spammerNumber][$g_eSpamFKey] = GUICtrlCreateCombo(" ", $iLeft+$iCol2 + ($j * $iSpaceX), $iTop+22 + ($j * $iSpaceY), 40, 20, $CBS_DROPDOWNLIST)
+		 ; Hotkey
+		 GUICtrlCreateLabel("Hotkey:", $iLeft+$iCol1 + 99 + ($iPosH * $iSpaceX), $iTop+49 + ($iPosV * $iSpaceY))
+		 $g_aSpammers[$spammerNumber][$g_eHotkeyLabel] = GUICtrlCreateInput("-", $iLeft+$iCol1 + 99 + ($iPosH * $iSpaceX), $iTop+64 + ($iPosV * $iSpaceY), 19, 20)
+		 GUICtrlSetState(-1, $GUI_DISABLE)
+		 $g_aSpammers[$spammerNumber][$g_eHotkeyButton] = GUICtrlCreateButton("+", $iLeft+$iCol1 + 120 + ($iPosH * $iSpaceX), $iTop+64 + ($iPosV * $iSpaceY), 14, 20)
+		 GUICtrlSetOnEvent(-1, "_OnButtonClickHotkey")
+		 GUICtrlSetBkColor(-1, $COLOR_DARK1)
 
-			; Skill bar
-			GUICtrlCreateLabel("Skill Bar", $iLeft+$iCol2 + ($j * $iSpaceX), $iTop+49 + ($j * $iSpaceY))
-			$g_aSpammers[$spammerNumber][$g_eSpamSkill] = GUICtrlCreateCombo("-", $iLeft+$iCol2 + ($j * $iSpaceX), $iTop+64 + ($j * $iSpaceY), 40, 20, $CBS_DROPDOWNLIST)
+		 ; F-Key
+		 GUICtrlCreateLabel("F-Key", $iLeft+$iCol2 + ($iPosH * $iSpaceX), $iTop+7 + ($iPosV * $iSpaceY))
+		 $g_aSpammers[$spammerNumber][$g_eSpamFKey] = GUICtrlCreateCombo("-", $iLeft+$iCol2 + ($iPosH * $iSpaceX), $iTop+22 + ($iPosV * $iSpaceY), 40, 20, $CBS_DROPDOWNLIST)
 
-			$spammerNumber += 1
-		 Next
+		 ; Skill bar
+		 GUICtrlCreateLabel("Skill Bar", $iLeft+$iCol2 + ($iPosH * $iSpaceX), $iTop+49 + ($iPosV * $iSpaceY))
+		 $g_aSpammers[$spammerNumber][$g_eSpamSkill] = GUICtrlCreateCombo("-", $iLeft+$iCol2 + ($iPosH * $iSpaceX), $iTop+64 + ($iPosV * $iSpaceY), 40, 20, $CBS_DROPDOWNLIST)
 
-		;MultiPressers
-	    For $n = $g_Tabs[$i][1] To ($g_Tabs[$i][1] + $g_Tabs[$i][2]) - 1
+		 ; Find next position
+		 If $iOrientation <> "horizontal" Then
+			;vertical
+			$iPosH += 1
+			If $iPosH = $iRows Then
+			   $iPosH = 0
+			   $iPosV += 1
+			EndIf
+		 Else
+			;horizontal
+			$iPosV += 1
+			If $iPosV = $iRows Then
+			   $iPosV = 0
+			   $iPosH += 1
+			EndIf
+		 EndIf
 
-			; Group color
-			$g_aMultiPressers[$presserNumber][2] =  GUICtrlCreateLabel("", $iLeft + ($n * $iSpaceX), $iTop+1 + ($n * $iSpaceY), 273, 92)
-			GUICtrlSetBkColor(-1, $COLOR_DARK2)
-			GUICtrlSetState(-1, $GUI_DISABLE)
+		 $spammerNumber += 1
+	  Next
 
-			GUICtrlCreateGroup("", $iLeft + ($n * $iSpaceX), $iTop-6 + ($n * $iSpaceY), 274, 101)
+	  ;MultiPressers
+	  For $n = 0 To $g_Tabs[$i][2] - 1
 
-			; Hidden label to save presser index
-			GUICtrlCreateLabel($presserNumber, -99, -99)
-			GUICtrlSetState(-1, $GUI_HIDE)
+		 ; Group color
+		 $g_aMultiPressers[$presserNumber][2] =  GUICtrlCreateLabel("", $iLeft + ($iPosH * $iSpaceX), $iTop+1 + ($iPosV * $iSpaceY), 273, 92)
+		 GUICtrlSetBkColor(-1, $COLOR_DARK2)
+		 GUICtrlSetState(-1, $GUI_DISABLE)
 
-			; Press button
-			GUICtrlCreateLabel("Presser", $iLeft+$iCol3 + ($n * $iSpaceX), $iTop+7 + ($n * $iSpaceY))
-			$g_aMultiPressers[$presserNumber][0] = GUICtrlCreateButton("Press", $iLeft+$iCol3 + ($n * $iSpaceX), $iTop+21 + ($n * $iSpaceY), 64, 64)
-			GUICtrlSetOnEvent(-1, "_OnButtonClickMultiPress")
-			GUICtrlSetBkColor(-1, $COLOR_DARK1)
+		 GUICtrlCreateGroup("", $iLeft + ($iPosH * $iSpaceX), $iTop-6 + ($iPosV * $iSpaceY), 274, 101)
 
-			; List
-			GUICtrlCreateLabel("Actions", $iLeft+$iCol1 + ($n * $iSpaceX), $iTop+7 + ($n * $iSpaceY))
-			$g_aMultiPressers[$presserNumber][3] = GUICtrlCreateList("", $iLeft+$iCol1 + ($n * $iSpaceX), $iTop+22 + ($n * $iSpaceY), 130, 64)
-			GUICtrlSetColor(-1, $COLOR_BLACK)
-			GUICtrlSetBkColor(-1, $COLOR_WHITE)
+		 ; Hidden label to save presser index
+		 GUICtrlCreateLabel($presserNumber, -99, -99)
+		 GUICtrlSetState(-1, $GUI_HIDE)
 
-			; Add button
-			$g_aMultiPressers[$presserNumber][5] = GUICtrlCreateButton("Add", $iLeft+$iCol2 - 7 + ($n * $iSpaceX), $iTop+10 + ($n * $iSpaceY), 44, 20)
-			GUICtrlSetOnEvent(-1, "_OnButtonClickAdd")
-			GUICtrlSetBkColor(-1, $COLOR_DARK1)
+		 ; Press button
+		 GUICtrlCreateLabel("Presser", $iLeft+$iCol3 + ($iPosH * $iSpaceX), $iTop+7 + ($iPosV * $iSpaceY))
+		 $g_aMultiPressers[$presserNumber][0] = GUICtrlCreateButton("Press", $iLeft+$iCol3 + ($iPosH * $iSpaceX), $iTop+21 + ($iPosV * $iSpaceY), 64, 64)
+		 GUICtrlSetOnEvent(-1, "_OnButtonClickMultiPress")
+		 GUICtrlSetBkColor(-1, $COLOR_DARK1)
 
-			; Edit button
-			$g_aMultiPressers[$presserNumber][7] = GUICtrlCreateButton("Edit", $iLeft+$iCol2 - 7 + ($n * $iSpaceX), $iTop+36 + ($n * $iSpaceY), 44, 20)
-			GUICtrlSetOnEvent(-1, "_OnButtonClickEdit")
-			GUICtrlSetBkColor(-1, $COLOR_DARK1)
+		 ; List
+		 GUICtrlCreateLabel("Actions", $iLeft+$iCol1 + ($iPosH * $iSpaceX), $iTop+7 + ($iPosV * $iSpaceY))
+		 $g_aMultiPressers[$presserNumber][3] = GUICtrlCreateList("", $iLeft+$iCol1 + ($iPosH * $iSpaceX), $iTop+22 + ($iPosV * $iSpaceY), 130, 64, BitOr($WS_BORDER, $WS_VSCROLL)) ; omit $LBS_SPRT style to not have it sorted alpabetically
+		 GUICtrlSetColor(-1, $COLOR_BLACK)
+		 GUICtrlSetBkColor(-1, $COLOR_WHITE)
 
-			; Delete button
-			$g_aMultiPressers[$presserNumber][6] = GUICtrlCreateButton("Delete", $iLeft+$iCol2 - 7 + ($n * $iSpaceX), $iTop+62 + ($n * $iSpaceY), 44, 20)
-			GUICtrlSetOnEvent(-1, "_OnButtonClickDelete")
-			GUICtrlSetBkColor(-1, $COLOR_DARK1)
+		 ; Add button
+		 $g_aMultiPressers[$presserNumber][5] = GUICtrlCreateButton("Add", $iLeft+$iCol2 - 7 + ($iPosH * $iSpaceX), $iTop+10 + ($iPosV * $iSpaceY), 44, 20)
+		 GUICtrlSetOnEvent(-1, "_OnButtonClickAdd")
+		 GUICtrlSetBkColor(-1, $COLOR_DARK1)
 
-			$presserNumber += 1
-		 Next
-	Next
+		 ; Edit button
+		 $g_aMultiPressers[$presserNumber][7] = GUICtrlCreateButton("Edit", $iLeft+$iCol2 - 7 + ($iPosH * $iSpaceX), $iTop+36 + ($iPosV * $iSpaceY), 44, 20)
+		 GUICtrlSetOnEvent(-1, "_OnButtonClickEdit")
+		 GUICtrlSetBkColor(-1, $COLOR_DARK1)
+
+		 ; Delete button
+		 $g_aMultiPressers[$presserNumber][6] = GUICtrlCreateButton("Delete", $iLeft+$iCol2 - 7 + ($iPosH * $iSpaceX), $iTop+62 + ($iPosV * $iSpaceY), 44, 20)
+		 GUICtrlSetOnEvent(-1, "_OnButtonClickDelete")
+		 GUICtrlSetBkColor(-1, $COLOR_DARK1)
+
+		 ; Find next position
+		 If $iOrientation <> "horizontal" Then
+			;vertical
+			$iPosH += 1
+			If $iPosH = $iRows Then
+			   $iPosH = 0
+			   $iPosV += 1
+			EndIf
+		 Else
+			;horizontal
+			$iPosV += 1
+			If $iPosV = $iRows Then
+			   $iPosV = 0
+			   $iPosH += 1
+			EndIf
+		 EndIf
+
+		 $presserNumber += 1
+	  Next
+   Next
 #EndRegion
 
 ; Detect dropdown events
@@ -243,9 +279,9 @@ While 1
 WEnd
 
 Func _Exit()
-	_IniSave() ; Save values to the INI file
-	$aWinPos = WinGetPos($hMainGUI)
-	_SaveWinPosition($aWinPos[0], $aWinPos[1])
-	Exit
+   _IniSave() ; Save values to the INI file
+   $aWinPos = WinGetPos($hMainGUI)
+   _SaveWinPosition($aWinPos[0], $aWinPos[1])
+   Exit
 EndFunc   ;==>_Exit
 

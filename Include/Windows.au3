@@ -64,14 +64,14 @@ Func _CheckWindowsExists()
 EndFunc   ;==>_CheckWindowsExists
 
 Func _getWindowNameFromCharacter($charName)
-   Local $WindowString = IniRead($sFilePath, "General", "WindowName", "Forsaken Kingdom - ;")
+   Local $WindowString = IniRead($sFilePath, "General", "WindowName", "; - Forsaken Kingdom")
    $WindowString = StringReplace($WindowString, ";", $charName, 1, 1)
    return $WindowString
 EndFunc ;==>_getWindowNameFromCharacter
 
 Func _getCharacterFromWindowName($windowName)
-   Local $WindowString = IniRead($sFilePath, "General", "WindowName", "Forsaken Kingdom - ;")
+   Local $WindowString = IniRead($sFilePath, "General", "WindowName", "; - Forsaken Kingdom")
    $WindowString = StringReplace($WindowString, ";", "", 1, 1) ; remove ';'
-   Local $output = StringReplace($windowName, $WindowString, "", 1, 1) ; remove everything except charcater name
+   Local $output = StringReplace($windowName, $WindowString, "", 1, 1) ; remove everything except character name
    return $output
 EndFunc ;==>_getCharacterFromWindowName

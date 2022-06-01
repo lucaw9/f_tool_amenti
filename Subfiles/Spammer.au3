@@ -23,8 +23,8 @@ Local $sFKey = $CmdLine[4]
 Local $sSkill = $CmdLine[5]
 
 ; Check if fkey and skill have been selected
-Local $bFKey = ($sFKey <> " ")
-Local $bSkill = ($sSkill <> " ")
+Local $bFKey = ($sFKey <> "-")
+Local $bSkill = ($sSkill <> "-")
 
 ; Delete F character from F-Keys to get the number
 If $bFKey = True Then $sFKey = StringTrimLeft($sFKey, 1)
@@ -32,7 +32,7 @@ If $bFKey = True Then $sFKey = StringTrimLeft($sFKey, 1)
 Func _Spam()
 	If $bSkill = True Then
 		; Send Skill number to flyff window
-		if $sSkill <> "-" Then
+		If $sSkill <> "-" Then
 		  _SendKey(48 + $sSkill)
 	    EndIf
 		If $bFKey = True Then

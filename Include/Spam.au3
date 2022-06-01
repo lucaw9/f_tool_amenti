@@ -111,7 +111,7 @@ Func _SpamStart($iSpamIndex)
       Return
 
     ; Check if fkey or skill has been selected
-    Case $sFKey = " " And $sSkill = " "
+    Case $sFKey = "-" And $sSkill = "-"
       MsgBox($MB_TASKMODAL + $MB_ICONERROR, "Validation Error", "Select atleast one F-Key or Skill Bar.")
       Return
   EndSelect

@@ -79,7 +79,7 @@ Func _MultiPress($iIndex)
   Local $sContent = $g_aMultiPressers[$iIndex][4]
   Local $sPresserFile = @ScriptDir & "\Subfiles\Presser.exe"
 
-  ; Check if MutlitPresser.exe file exists
+  ; Check if Presser.exe file exists
   If FileExists($sPresserFile) = 0 Then
       MsgBox($MB_TASKMODAL + $MB_ICONERROR, $sPresserFile, "Windows cannot find " & @CRLF & "'" & $sPresserFile & "'.")
       Return
@@ -91,7 +91,7 @@ Func _MultiPress($iIndex)
   Local $aContent = StringSplit($sContent, "|", 2)
   For $i = 0 To UBound($aContent) - 1
 	  Local $list = StringSplit($aContent[$i], ",", 2)
-	  If (UBound($list) <> 3) Or (StringLen($list[2]) < 4) Or (StringLen($list[0]) > 1) Or (StringLen($list[1]) > 2) Then ;And (StringLen($list[1]) <> 5))
+	  If (UBound($list) <> 3) Or (StringLen($list[2]) < 4) Or (StringLen($list[0]) > 1) Or (StringLen($list[1]) > 2) Then
 		 MsgBox($MB_TASKMODAL + $MB_ICONERROR, "Validation Error", "Invalid Input for Presser.")
 		 Return
 	  EndIf

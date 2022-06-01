@@ -11,6 +11,8 @@ Global Const $GUI_SHOW = 16           ; GUI State
 Global Const $GUI_HIDE = 32						; GUI State
 Global Const $GUI_ENABLE = 64					; GUI State
 Global Const $GUI_DISABLE = 128				;	GUI State
+Global Const $WS_BORDER = 0x00800000		; Default style for List: thin border
+Global Const $WS_VSCROLL = 0x00200000		; Default style for list: vertical scrolling
 
 Func HexToKey($hex)
    If $hex = "-" Then

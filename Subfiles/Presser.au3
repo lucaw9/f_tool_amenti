@@ -26,8 +26,8 @@ Local $sFKey = $CmdLine[3]
 Local $sSkill = $CmdLine[4]
 
 ; Check if fkey and skill have been selected
-Local $bFKey = ($sFKey <> " ")
-Local $bSkill = ($sSkill <> " ")
+Local $bFKey = ($sFKey <> "-")
+Local $bSkill = ($sSkill <> "-")
 
 ; Delete F character from F-Keys to get the number
 If ($bFKey = True) And ($sFKey <> "z") Then
