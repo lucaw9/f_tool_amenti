@@ -2,6 +2,7 @@
   
 # FTool by Amenti and Garu
 [GitHub Link](https://github.com/lucaw9/f_tool_amenti/)
+
 This is a tool made with [AutoIt] that automates the keystroke for the game FlyFF inspired by Ftool Extended 0.9a.
 Original 1.0 Version by Garu: https://github.com/davidgaroro/ftool-by-garu
 
