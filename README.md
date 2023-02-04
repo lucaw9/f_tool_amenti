@@ -9,8 +9,8 @@ Original 1.0 Version by Garu: https://github.com/davidgaroro/ftool-by-garu
 Development since then by Amenti
 
 
-## Full 2.3 Zip File including just .exe-Files now available
-[Click here!](https://github.com/lucaw9/f_tool_amenti/blob/master/ftool_amenti_v2_3.zip)
+## Full 2.5 Zip File including just .exe-Files now available as a release!
+[Click here!](https://github.com/lucaw9/f_tool_amenti/releases/tag/v2.5.0)
 
 
 [AutoIt]: https://www.autoitscript.com/
@@ -46,7 +46,7 @@ Development since then by Amenti
 - Added features to presser:
 	- Added hotkeys: same functionality as for spammer
 	- Added icon: same functionality as for spammer
-	- Added ability to set a skill bar to return to: set as fourth parameter in list entry (Caution: Every entry needs 4 parameters now! Vou need to add ",-" to all existing entries.)
+	- Added ability to set a skill bar to return to: set as fourth parameter in list entry. Caution: Every entry needs 4 parameters now! You need to add ",-" to all existing entries.
 - Added ability to rename a spammer or presser by clicking on the label above their start/press button
 
 ## Built With
