@@ -22,7 +22,17 @@ Func _OnButtonClickSpam($index = -1)
    EndIf
 EndFunc   ;==>_OnButtonClick
 
-Func _OnIconClick1()
+Func _OnSpammerNameLabelClick()
+   ; Get index
+  Local $iIndex = GUICtrlRead(@GUI_CtrlId - 1) ; ID des Spammers
+  Local $input = InputBox("Set name", "Set a new name for this spammer:", $g_aSpammers[$iIndex][$g_eLabelText], "", 250, 140)
+  If (@error <> 1) Then ; if not canceled
+    $g_aSpammers[$iIndex][$g_eLabelText] = $input
+    GUICtrlSetData($g_aSpammers[$iIndex][$g_eLabelCtrl], $input)
+  EndIf
+EndFunc   ;==>_OnSpammerNameLabelClick
+
+Func _OnSpammerIconClick()
    ; Get spammer index
    Local $iSpamIndex = GUICtrlRead(@GUI_CtrlId - 7)
    Local $sFileOpenDialog = FileOpenDialog("Pick a new icon", $iIconPath, "JPEG (*.jpg;*.jpeg;*.jpe;*.jfif)")
@@ -39,10 +49,10 @@ Func _OnIconClick1()
    EndIf
 EndFunc
 
-Func _OnButtonClickHotkey()
+Func _OnButtonClickSpammerHotkey()
    ; Get spammer index
    Local $iSpamIndex = GUICtrlRead(@GUI_CtrlId - 10)
-   SplashTextOn("Edit Hotkey", "Press a key." & @CRLF & "SHIFT + this key will be the combination to activate this spammer." & @CRLF & "Press - to remove this hotkey." & @CRLF & "" & @CRLF & "Additional info:" & @CRLF & "Some keys might not work." & @CRLF & "When setting the same hotkey for multiple spammers, only the first one will be activated.", $iWinWidth, 150, $iWinLeft, $iWinTop+100, 0, "", 8)
+   SplashTextOn("Edit Hotkey", "Press a key." & @CRLF & "SHIFT + this key will be the combination to activate this spammer." & @CRLF & "Press - to remove this hotkey." & @CRLF & "" & @CRLF & "Additional info:" & @CRLF & "Some keys might not work." & @CRLF & "When setting the same hotkey for multiple spammers or pressers, only the first one will be activated.", $iWinWidth, 150, $iWinLeft, $iWinTop+100, 0, "", 8)
    Local $pressed = False
    ; loop until key is pressed
    While Not $pressed

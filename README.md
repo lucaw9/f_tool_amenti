@@ -42,6 +42,13 @@ Development since then by Amenti
 - Added adjustable Rows: spammers/pressers in any grid now possible instead of just vertical/horizontal
 - minor bugfixes (lists not sorted alphabetically anymore, "-" instead of " " for no f-key, new default windowname)
 
+## 2.5
+- Added features to presser:
+	- Added hotkeys: same functionality as for spammer
+	- Added icon: same functionality as for spammer
+	- Added ability to set a skill bar to return to: set as fourth parameter in list entry (Caution: Every entry needs 4 parameters now! Vou need to add ",-" to all existing entries.)
+- Added ability to rename a spammer or presser by clicking on the label above their start/press button
+
 ## Built With
 AutoIt v3.3.14.5
 

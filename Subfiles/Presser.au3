@@ -14,8 +14,8 @@
 ; Disable tray menu
 #NoTrayIcon
 
-; Check if params are less then 4
-If $CmdLine[0] <> 4 Then
+; Check if params are less then 5
+If $CmdLine[0] <> 5 Then
 	Exit
 EndIf
 
@@ -24,10 +24,12 @@ Local $iMainPID = $CmdLine[1]
 Local $hWindow = $CmdLine[2]
 Local $sFKey = $CmdLine[3]
 Local $sSkill = $CmdLine[4]
+Local $sReturnSkill = $CmdLine[5]
 
-; Check if fkey and skill have been selected
+; Check if fkey, skill and return skill have been selected
 Local $bFKey = ($sFKey <> "-")
 Local $bSkill = ($sSkill <> "-")
+Local $bReturnSkill = ($sReturnSkill <> "-")
 
 ; Delete F character from F-Keys to get the number
 If ($bFKey = True) And ($sFKey <> "z") Then
@@ -37,10 +39,8 @@ EndIf
 Func _Press()
   	If $bSkill = True Then
 		; Send Skill number to flyff window
-		if $sSkill <> "-" Then
-		   _SendKey(48 + $sSkill)
-		   Sleep(150)
-	    EndIf
+	    _SendKey(48 + $sSkill)
+	    Sleep(150)
 	EndIf
 	If $bFKey = True Then
 		; Send F-key to flyff window
@@ -49,7 +49,12 @@ Func _Press()
 	    Else
 		   _SendKey(111 + $sFKey)
 	    EndIf
-	EndIf
+	 EndIf
+	 If $bReturnSkill = True Then
+		; Send Return skill bar to flyff window
+	    Sleep(150)
+	    _SendKey(48 + $sReturnSkill)
+	 EndIf
 EndFunc   ;==>_Press
 
 Func _SendKey($iKey)

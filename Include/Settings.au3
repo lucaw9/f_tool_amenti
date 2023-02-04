@@ -6,21 +6,25 @@ Func _IniSave()
    Local $sSection = ""
    For $i = 0 To UBound($g_aSpammers) - 1
 	  $sSection = "Spammer" & $i + 1
-	  ; Save window title, interval, icon, Hotkey, FKey, Skill
+	  ; Save all settings
 	  IniWrite($sFilePath, $sSection, "WindowTitle", GUICtrlRead($g_aSpammers[$i][$g_eSpamWindow]))
 	  IniWrite($sFilePath, $sSection, "Interval", GUICtrlRead($g_aSpammers[$i][$g_eSpamInterval]))
 	  IniWrite($sFilePath, $sSection, "Icon1", $g_aSpammers[$i][$g_eIcon1Path])
 	  IniWrite($sFilePath, $sSection, "Hotkey", $g_aSpammers[$i][$g_eHotkey])
 	  IniWrite($sFilePath, $sSection, "FKey", GUICtrlRead($g_aSpammers[$i][$g_eSpamFKey]))
 	  IniWrite($sFilePath, $sSection, "Skill", GUICtrlRead($g_aSpammers[$i][$g_eSpamSkill]))
+	  IniWrite($sFilePath, $sSection, "Name", $g_aSpammers[$i][$g_eLabelText])
    Next
 
    Local $mSection = ""
    For $k = 0 To UBound($g_aMultiPressers) - 1
 	  $mSection = "MultiPresser" & $k + 1
 
-	  ; Save Content
+	  ; Save all settings
 	  IniWrite($sFilePath, $mSection, "Content", $g_aMultiPressers[$k][4])
+	  IniWrite($sFilePath, $mSection, "Name", $g_aMultiPressers[$k][8])
+	  IniWrite($sFilePath, $mSection, "Hotkey", $g_aMultiPressers[$k][10])
+	  IniWrite($sFilePath, $mSection, "Icon", $g_aMultiPressers[$k][13])
    Next
 EndFunc ;==>_IniSave
 
@@ -92,6 +96,11 @@ Func _IniLoad()
 	  ; Set skill
 	  $sSkill = IniRead($sFilePath, $sSection, "Skill", "-")
 	  GUICtrlSetData($g_aSpammers[$i][$g_eSpamSkill], "1|2|3|4|5|6|7|8", $sSkill)
+
+	  ; Set name
+	  $sName = IniRead($sFilePath, $sSection, "Name", "Spammer")
+	  GUICtrlSetData($g_aSpammers[$i][$g_eLabelCtrl], $sName)
+	  $g_aSpammers[$i][$g_eLabelText] = $sName
    Next
 
    For $k = 0 to UBound($g_aMultiPressers) - 1
@@ -101,6 +110,24 @@ Func _IniLoad()
 	  $mContent = IniRead($sFilePath, $mSection, "Content", "")
 	  $g_aMultiPressers[$k][4] = $mContent
 	  GUICtrlSetData($g_aMultiPressers[$k][3], $mContent)
+
+	  ; Set name
+	  $mName = IniRead($sFilePath, $mSection, "Name", "Presser")
+	  GUICtrlSetData($g_aMultiPressers[$k][9], $mName)
+	  $g_aMultiPressers[$k][8] = $mName
+
+	  ; Set Hotkey
+	  $mHotkey = IniRead($sFilePath, $mSection, "Hotkey", "-")
+	  GUICtrlSetData($g_aMultiPressers[$k][11], HexToKey($mHotkey))
+	  $g_aMultiPressers[$k][10] = $mHotkey
+
+	  ; Set icon
+	  $mIcon = IniRead($sFilePath, $mSection, "Icon", "")
+	  If $mIcon = "" Then
+		 $mIcon = "none.jpg"
+	  EndIf
+	  GUICtrlSetImage($g_aMultiPressers[$k][12], @ScriptDir & "\Icons\" & $mIcon)
+	  $g_aMultiPressers[$k][13] = $mIcon
    Next
 EndFunc ;==>_IniLoad
 
@@ -135,7 +162,6 @@ Func _CalcBiggestTab(ByRef $iMaxDepth, ByRef $iMaxRows, $iRows)
 	  $iMaxRows = $iRows
    EndIf
 EndFunc ;==>_CalcBiggestTab
-
 
 ; Settings Window
 Local $hSettingsGUI
