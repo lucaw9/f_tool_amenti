@@ -1,9 +1,9 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=Resources\aibatt.ico
 #AutoIt3Wrapper_Res_Description=FTool by Amenti
-#AutoIt3Wrapper_Res_Fileversion=2.5
+#AutoIt3Wrapper_Res_Fileversion=2.6
 #AutoIt3Wrapper_Res_ProductName=FTool by Amenti
-#AutoIt3Wrapper_Res_ProductVersion=2.5
+#AutoIt3Wrapper_Res_ProductVersion=2.6
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
 ; Mandatory execution as administrator
@@ -22,13 +22,16 @@ Opt("TrayMenuMode", 1) ; Disable default tray menu
 Opt("TrayOnEventMode", 1) ; Enable OnEvent functions notifications for the tray
 
 ; GUI Window variables
-Local const $sTitle = "FTool by Amenti 2.5"
+Local const $sTitle = "FTool by Amenti 2.6"
 Local $iWinWidth = 286
 Local $iWinHeight = 420
 Local $iWinLeft = -1
 Local $iWinTop = -1
 Local $iOrientation = "vertical"
 Local $iRows = 1
+Local $iHotkeyBaseSpam = ""
+Local $iHotkeyBasePress = ""
+Local $bSettingsOpen = False
 
 ; Colors
 Global $COLOR_GREEN = 0x0f801b
@@ -43,6 +46,7 @@ _ReadWinPosition($iWinLeft, $iWinTop)
 _ReadOrientation($iOrientation)
 _ReadRows($iRows)
 Global $g_Tabs = _getTabArray() ; Two-dimensional: [ArrayNumber][0 = Name, 1 = Spammers, 2 = MultiPressers]
+_ReadHotkeyBase($iHotkeyBaseSpam, $iHotkeyBasePress)
 
 Local $iMaxDepth = 1
 Local $iMaxRows = 1
@@ -273,43 +277,47 @@ Local $hDLL = DllOpen("user32.dll")
 
 ; Loop to check for user key inputs and to disable spammers on closed windows
 While 1
-   ; When SHIFT is pressed
-   If _IsPressed("10", $hDLL) Then
-	  ; check all spammer Hotkeys
-	  For $h = 0 To UBound($g_aSpammers) - 1
-		 Local $key = $g_aSpammers[$h][$g_eHotkey]
-		 If $key <> "-" Then
-			If _IsPressed($key, $hDLL) Then
-			   _OnButtonClickSpam($h)
+   If Not $bSettingsOpen Then
+	  ; When Presser Hotkey Base is pressed
+	  If _IsPressed($iHotkeyBasePress, $hDLL) Then
+		 ; check all presser Hotkeys
+		 For $h = 0 To UBound($g_aMultiPressers) - 1
+			Local $key = $g_aMultiPressers[$h][10]
+			If $key <> "-" Then
+			   If _IsPressed($key, $hDLL) Then
+				  _OnButtonClickMultiPress($h)
+			   EndIf
+			   ; Wait until key is released.
+			   While _IsPressed($key, $hDLL)
+				  Sleep(50)
+			   WEnd
 			EndIf
-			; Wait until key is released.
-			While _IsPressed($key, $hDLL)
-			   Sleep(100)
-			WEnd
-		 EndIf
-	  Next
-	  ; check all presser Hotkeys
-	  For $h = 0 To UBound($g_aMultiPressers) - 1
-		 Local $key = $g_aMultiPressers[$h][10]
-		 If $key <> "-" Then
-			If _IsPressed($key, $hDLL) Then
-			   _OnButtonClickMultiPress($h)
+		 Next
+	  EndIf
+	  ; When Spammer Hotkey Base is pressed
+	  If _IsPressed($iHotkeyBaseSpam, $hDLL) Then
+	   ; check all spammer Hotkeys
+		 For $h = 0 To UBound($g_aSpammers) - 1
+			Local $key = $g_aSpammers[$h][$g_eHotkey]
+			If $key <> "-" Then
+			   If _IsPressed($key, $hDLL) Then
+				  _OnButtonClickSpam($h)
+			   EndIf
+			   ; Wait until key is released.
+			   While _IsPressed($key, $hDLL)
+				  Sleep(50)
+			   WEnd
 			EndIf
-			; Wait until key is released.
-			While _IsPressed($key, $hDLL)
-			   Sleep(100)
-			WEnd
-		 EndIf
-	  Next
+		 Next
+	  EndIf
+	  _CheckWindowsExists()
    EndIf
-   _CheckWindowsExists()
-   Sleep(100); Sleep to reduce CPU usage
+   Sleep(50); Sleep to reduce CPU usage
 WEnd
 
 Func _Exit()
    _IniSave() ; Save values to the INI file
-   $aWinPos = WinGetPos($hMainGUI)
-   _SaveWinPosition($aWinPos[0], $aWinPos[1])
+   _SaveWinPosition(WinGetPos($hMainGUI)[0], WinGetPos($hMainGUI)[1])
    Exit
 EndFunc   ;==>_Exit
 

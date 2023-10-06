@@ -58,7 +58,7 @@ EndFunc   ;==>_OnButtonClickEdit
 Func _OnButtonClickPresserHotkey()
    ; Get presser index
    Local $iIndex = GUICtrlRead(@GUI_CtrlId - 10)
-   SplashTextOn("Edit Hotkey", "Press a key." & @CRLF & "SHIFT + this key will be the combination to activate this spammer." & @CRLF & "Press - to remove this hotkey." & @CRLF & "" & @CRLF & "Additional info:" & @CRLF & "Some keys might not work." & @CRLF & "When setting the same hotkey for multiple spammers or pressers, only the first one will be activated.", $iWinWidth, 150, $iWinLeft, $iWinTop+100, 0, "", 8)
+   SplashTextOn("Edit Hotkey", "Press a key." & @CRLF & "Your base + this key will be the combination to activate this spammer." & @CRLF & "Press - to remove this hotkey." & @CRLF & "" & @CRLF & "Additional info:" & @CRLF & "Some keys might not work." & @CRLF & "When setting the same hotkey for multiple spammers or pressers, only the first one will be activated.", 600, 150, WinGetPos($hMainGUI)[0], WinGetPos($hMainGUI)[1]+100, 0, "", 8)
    Local $pressed = False
    ; loop until key is pressed
    While Not $pressed
@@ -69,7 +69,7 @@ Func _OnButtonClickPresserHotkey()
 			; if not "-" -> use this hotkey
 			If $hex <> Hex(189) Then
 			   $g_aMultiPressers[$iIndex][10] = $hex
-			   GUICtrlSetData($g_aMultiPressers[$iIndex][11], HexToKey($hex))
+			   GUICtrlSetData($g_aMultiPressers[$iIndex][11], _HexToKey($hex))
 			Else ; "-" -> remove this hotkey
 			   $g_aMultiPressers[$iIndex][10] = "-"
 			   GUICtrlSetData($g_aMultiPressers[$iIndex][11], "-")

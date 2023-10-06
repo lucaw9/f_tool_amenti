@@ -41,6 +41,11 @@ Func _ReadRows(ByRef $iRows)
    $iRows = IniRead($sFilePath, "General", "Rows", 1)
 EndFunc
 
+Func _ReadHotkeyBase(ByRef $iHotkeyBaseSpam, ByRef $iHotkeyBasePress)
+   $iHotkeyBaseSpam = IniRead($sFilePath, "General", "HotkeyBaseSpammer", "000000A0")
+   $iHotkeyBasePress = IniRead($sFilePath, "General", "HotkeyBasePresser", "000000A0")
+EndFunc
+
 Func _getTabArray()
    Local $tab_count = IniRead($sFilePath, "General", "Tabs", 2)
    Local $array[$tab_count][3]
@@ -173,10 +178,12 @@ Local $SettingsRowsCombo
 Local $SettingsRows
 
 Func _OnSettingsClick()
-   Local $iSettingsHeight = 450
+   $bSettingsOpen = True
+
+   Local $iSettingsHeight = 530
    Local $iSettingsWidth = 286
 
-   $hSettingsGUI = GUICreate("Settings", $iSettingsWidth, $iSettingsHeight, $iWinLeft, $iWinTop+50)
+   $hSettingsGUI = GUICreate("Settings", $iSettingsWidth, $iSettingsHeight, WinGetPos($hMainGUI)[0], WinGetPos($hMainGUI)[1]+50)
    GUICtrlCreateLabel("", 0, 0, $iWinWidth, $iSettingsHeight)
    GUICtrlSetBkColor(-1, $COLOR_DARK2)
    GUICtrlSetState(-1, $GUI_DISABLE)
@@ -268,11 +275,46 @@ Func _OnSettingsClick()
    GUICtrlSetColor(-1, $COLOR_WHITE)
    GUICtrlSetBkColor(-1, $COLOR_DARK2)
 
+
+   ; Hotkey Base
+   Local $HotkeysY = 410
+
+   ; Label
+   GUICtrlCreateLabel("Base key for the hotkeys", $iCol1, $HotkeysY - 20)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+
+   ; Spam
+   GUICtrlCreateLabel("Spammer: ", $iCol1, $HotkeysY)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+   Global $u_HotkeySpammer = GUICtrlCreateLabel(_HexToKey($iHotkeyBaseSpam), $iCol1 + 80, $HotkeysY, 100)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+   GUICtrlCreateButton("Edit", $iCol3 - 40, $HotkeysY - 4, 44, 20)
+   GUICtrlSetOnEvent(-1, "_OnSettingsButtonClickEditHotkeySpam")
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK1)
+
+   ; Press
+   GUICtrlCreateLabel("Presser: ", $iCol1, $HotkeysY + 28)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+   Global $u_HotkeyPresser = GUICtrlCreateLabel(_HexToKey($iHotkeyBasePress), $iCol1 + 80, $HotkeysY + 28, 100)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+   GUICtrlCreateButton("Edit", $iCol3 - 40, $HotkeysY + 28 - 4, 44, 20)
+   GUICtrlSetOnEvent(-1, "_OnSettingsButtonClickEditHotkeyPress")
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK1)
+
+
+
    ; Buttons at Bottom
-   Local $ButtonsY = 408
+   Local $ButtonsY = 490
 
    ; Restart Label
-   GUICtrlCreateLabel("Changes will only take effect after restarting the tool!", $iCol1, $ButtonsY - 20)
+   GUICtrlCreateLabel("Most changes will only take effect after" & @CRLF & "restarting the tool!", $iCol1, $ButtonsY - 20)
    GUICtrlSetColor(-1, $COLOR_WHITE)
    GUICtrlSetBkColor(-1, $COLOR_DARK2)
 
@@ -296,10 +338,53 @@ Func _OnSettingsClick()
 EndFunc   ;==>_OnSettingsClick
 
 Func _ExitSettings()
+   $bSettingsOpen = False
    GUISetState(@SW_HIDE, $hSettingsGUI)
 EndFunc ;==>_ExitSettings
 
 Local $tab_text = "Specify a tabname, amount of spammers, and amount of pressers." & @CRLF & "Example: Default,4,1"
+
+Local $HotkeyBaseText = "Press a key." & @CRLF & "This key will be the base for this hotkey." & @CRLF & "Example: Press SHIFT and your hotkeys will be SHIFT + the key you set for the action." & @CRLF & "Some keys might be displayed as ?? but will still work."
+
+Func _OnSettingsButtonClickEditHotkeySpam()
+   ; Get presser index
+   SplashTextOn("Edit hotkey base for spammers", $HotkeyBaseText, 300, 100, WinGetPos($hMainGUI)[0], WinGetPos($hMainGUI)[1]+100, 0, "", 8)
+   Local $pressed = False
+   ; loop until key is pressed
+   While Not $pressed
+	  ; check all possible keys
+	  For $h = 8 To 254
+		 Local $hex = Hex($h)
+		 If _IsPressed($hex, $hDLL) Then
+			$iHotkeyBaseSpam = $hex
+			GUICtrlSetData($u_HotkeySpammer, _HexToKey($hex))
+			$pressed = True
+			ExitLoop
+		 EndIf
+	  Next
+   WEnd
+   SplashOff()
+EndFunc   ;==>_OnSettingsButtonClickEditHotkeySpam
+
+Func _OnSettingsButtonClickEditHotkeyPress()
+   ; Get presser index
+   SplashTextOn("Edit hotkey base for pressers", $HotkeyBaseText, 300, 100, WinGetPos($hMainGUI)[0], WinGetPos($hMainGUI)[1]+100, 0, "", 8)
+   Local $pressed = False
+   ; loop until key is pressed
+   While Not $pressed
+	  ; check all possible keys
+	  For $h = 8 To 254
+		 Local $hex = Hex($h)
+		 If _IsPressed($hex, $hDLL) Then
+			$iHotkeyBasePress = $hex
+			GUICtrlSetData($u_HotkeyPresser, _HexToKey($hex))
+			$pressed = True
+			ExitLoop
+		 EndIf
+	  Next
+   WEnd
+   SplashOff()
+EndFunc   ;==>_OnSettingsButtonClickEditHotkeyPress
 
 Func _OnSettingsButtonClickAdd()
    Local $input = InputBox("Add tab", $tab_text, "", "", 300, 160)
@@ -360,6 +445,8 @@ Func _OnSettingsButtonClickSave()
    IniWrite($sFilePath, "General", "Orientation", $SettingsOrientation)
    $SettingsRows = GUICtrlRead($SettingsRowsCombo)
    IniWrite($sFilePath, "General", "Rows", $SettingsRows)
+   IniWrite($sFilePath, "General", "HotkeyBaseSpammer", $iHotkeyBaseSpam)
+   IniWrite($sFilePath, "General", "HotkeyBasePresser", $iHotkeyBasePress)
    Local $WindowNameInput = GUICtrlRead($SettingsWindowName)
    If $SettingsTabListContent <> "" And $WindowNameInput <> "" Then
 	  Local $contentArray = StringSplit($SettingsTabListContent, "|", 2) ; Flag for no count as first element
@@ -384,5 +471,18 @@ EndFunc   ;==>_OnOrientationClickVertical
 Func _OnOrientationClickHorizontal()
    $SettingsOrientation = "horizontal"
 EndFunc   ;==>_OnOrientationClickHorizontal
+
+Func _HexToKey($hex)
+   $SettingsOrientation = "horizontal"
+   If $hex = "000000A2" Or $hex = "00000011" Then
+	  Return "CTRL"
+   ElseIf $hex = "000000A0" Or $hex = "00000010" Then
+	  Return "SHIFT"
+   ElseIf $hex = "000000A4" Or $hex = "00000012" Then
+	  Return "ALT"
+   Else
+	  Return HexToKey($hex)
+   EndIf
+EndFunc   ;==>_HexToKey
 
 

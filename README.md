@@ -49,6 +49,11 @@ Development since then by Amenti
 	- Added ability to set a skill bar to return to: set as fourth parameter in list entry. Caution: Every entry needs 4 parameters now! You need to add ",-" to all existing entries.
 - Added ability to rename a spammer or presser by clicking on the label above their start/press button
 
+## 2.6
+- Hotkey base key can now be changed seperately for spammers and pressers in settings
+- Improved performance for hotkeys
+- Fixed window position for key prompts
+
 ## Built With
 AutoIt v3.3.14.5
 
