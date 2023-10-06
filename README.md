@@ -10,7 +10,7 @@ Development since then by Amenti
 
 
 ## Full 2.6 Zip File including just .exe-Files now available as a release!
-[Click here!](https://github.com/lucaw9/f_tool_amenti/releases/tag/v2.5.0)
+[Click here!](https://github.com/lucaw9/f_tool_amenti/releases/tag/v2.6.0)
 
 
 [AutoIt]: https://www.autoitscript.com/
