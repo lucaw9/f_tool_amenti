@@ -9,7 +9,7 @@ Original 1.0 Version by Garu: https://github.com/davidgaroro/ftool-by-garu
 Development since then by Amenti
 
 
-## Full 2.5 Zip File including just .exe-Files now available as a release!
+## Full 2.6 Zip File including just .exe-Files now available as a release!
 [Click here!](https://github.com/lucaw9/f_tool_amenti/releases/tag/v2.5.0)
 
 
