@@ -1,9 +1,9 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=Resources\aibatt.ico
 #AutoIt3Wrapper_Res_Description=FTool by Amenti
-#AutoIt3Wrapper_Res_Fileversion=2.6
+#AutoIt3Wrapper_Res_Fileversion=2.7
 #AutoIt3Wrapper_Res_ProductName=FTool by Amenti
-#AutoIt3Wrapper_Res_ProductVersion=2.6
+#AutoIt3Wrapper_Res_ProductVersion=2.7
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
 ; Mandatory execution as administrator
@@ -22,7 +22,7 @@ Opt("TrayMenuMode", 1) ; Disable default tray menu
 Opt("TrayOnEventMode", 1) ; Enable OnEvent functions notifications for the tray
 
 ; GUI Window variables
-Local const $sTitle = "FTool by Amenti 2.6"
+Local const $sTitle = "FTool by Amenti 2.7"
 Local $iWinWidth = 286
 Local $iWinHeight = 420
 Local $iWinLeft = -1
@@ -32,6 +32,7 @@ Local $iRows = 1
 Local $iHotkeyBaseSpam = ""
 Local $iHotkeyBasePress = ""
 Local $bSettingsOpen = False
+Global $iKeyLoopTime = 100
 
 ; Colors
 Global $COLOR_GREEN = 0x0f801b
@@ -45,6 +46,7 @@ Global $COLOR_BLACK = 0x000000
 _ReadWinPosition($iWinLeft, $iWinTop)
 _ReadOrientation($iOrientation)
 _ReadRows($iRows)
+_ReadKeyLoopTime($iKeyLoopTime)
 Global $g_Tabs = _getTabArray() ; Two-dimensional: [ArrayNumber][0 = Name, 1 = Spammers, 2 = MultiPressers]
 _ReadHotkeyBase($iHotkeyBaseSpam, $iHotkeyBasePress)
 
@@ -312,7 +314,7 @@ While 1
 	  EndIf
 	  _CheckWindowsExists()
    EndIf
-   Sleep(50); Sleep to reduce CPU usage
+   Sleep($iKeyLoopTime); Sleep to reduce CPU usage
 WEnd
 
 Func _Exit()

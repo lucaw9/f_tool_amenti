@@ -41,6 +41,10 @@ Func _ReadRows(ByRef $iRows)
    $iRows = IniRead($sFilePath, "General", "Rows", 1)
 EndFunc
 
+Func _ReadKeyLoopTime(ByRef $iTime)
+   $iTime = IniRead($sFilePath, "General", "KeyLoopTime", 100)
+EndFunc
+
 Func _ReadHotkeyBase(ByRef $iHotkeyBaseSpam, ByRef $iHotkeyBasePress)
    $iHotkeyBaseSpam = IniRead($sFilePath, "General", "HotkeyBaseSpammer", "000000A0")
    $iHotkeyBasePress = IniRead($sFilePath, "General", "HotkeyBasePresser", "000000A0")
@@ -180,7 +184,7 @@ Local $SettingsRows
 Func _OnSettingsClick()
    $bSettingsOpen = True
 
-   Local $iSettingsHeight = 530
+   Local $iSettingsHeight = 630
    Local $iSettingsWidth = 286
 
    $hSettingsGUI = GUICreate("Settings", $iSettingsWidth, $iSettingsHeight, WinGetPos($hMainGUI)[0], WinGetPos($hMainGUI)[1]+50)
@@ -309,9 +313,22 @@ Func _OnSettingsClick()
    GUICtrlSetBkColor(-1, $COLOR_DARK1)
 
 
+   ; KeyLoopTime
+   Local $KeyLoopTimeY = 465
+
+   GUICtrlCreateLabel("Key Loop Time", $iCol1, $KeyLoopTimeY)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+   Global $KeyLoopTimeInput = GUICtrlCreateInput($iKeyLoopTime, $iCol1, $KeyLoopTimeY + 20, 250, 20)
+   GUICtrlSetColor(-1, $COLOR_BLACK)
+   GUICtrlSetBkColor(-1, $COLOR_WHITE)
+   GUICtrlCreateLabel("Amount of time in ms to wait between checking" & @CRLF & "for key inputs. Lower number means faster" & @CRLF & "reaction but more CPU usage.", $iCol1, $KeyLoopTimeY + 48)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+
 
    ; Buttons at Bottom
-   Local $ButtonsY = 490
+   Local $ButtonsY = 590
 
    ; Restart Label
    GUICtrlCreateLabel("Most changes will only take effect after" & @CRLF & "restarting the tool!", $iCol1, $ButtonsY - 20)
@@ -447,6 +464,8 @@ Func _OnSettingsButtonClickSave()
    IniWrite($sFilePath, "General", "Rows", $SettingsRows)
    IniWrite($sFilePath, "General", "HotkeyBaseSpammer", $iHotkeyBaseSpam)
    IniWrite($sFilePath, "General", "HotkeyBasePresser", $iHotkeyBasePress)
+   $iKeyLoopTime = GUICtrlRead($KeyLoopTimeInput)
+   IniWrite($sFilePath, "General", "KeyLoopTime", $iKeyLoopTime)
    Local $WindowNameInput = GUICtrlRead($SettingsWindowName)
    If $SettingsTabListContent <> "" And $WindowNameInput <> "" Then
 	  Local $contentArray = StringSplit($SettingsTabListContent, "|", 2) ; Flag for no count as first element
