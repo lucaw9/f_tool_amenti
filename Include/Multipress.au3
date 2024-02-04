@@ -19,7 +19,7 @@ Func _MultiPressButtonFlash($iPressIndex)
   Local $iButtonCtrlId = $g_aMultiPressers[$iPressIndex][$g_eSpamButton]
   GUICtrlSetBkColor($iButtonCtrlId, $COLOR_GREEN)
   ; play Beep
-  If ($bSoundsEnabled) Then
+  If ($bSoundsEnabled = 1) Then
      SoundPlay(@ScriptDir & "\Sounds\" & $sSoundFilePresser, 0)
   EndIf
   Sleep(100)

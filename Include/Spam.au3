@@ -142,7 +142,7 @@ Func _SpamStart($iSpamIndex)
 
   GUICtrlSetBkColor($iButtonCtrlId, $COLOR_GREEN)
   ; play Beep
-  If ($bSoundsEnabled) Then
+  If ($bSoundsEnabled = 1) Then
     SoundPlay(@ScriptDir & "\Sounds\" & $sSoundFileSpamStart, 0)
   EndIf
 
@@ -199,7 +199,7 @@ Func _SpamStop($iSpamIndex)
 
   GUICtrlSetBkColor($iButtonCtrlId, $COLOR_DARK1)
   ; play Beep
-  If ($bSoundsEnabled) Then
+  If ($bSoundsEnabled = 1) Then
     SoundPlay(@ScriptDir & "\Sounds\" & $sSoundFileSpamStop, 0)
   EndIf
 EndFunc   ;==>_SpamStop
