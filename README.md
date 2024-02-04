@@ -9,8 +9,8 @@ Original 1.0 Version by Garu: https://github.com/davidgaroro/ftool-by-garu
 Development since then by Amenti
 
 
-## Full 2.7 Zip File including just .exe-Files now available as a release!
-[Click here!](https://github.com/lucaw9/f_tool_amenti/releases/tag/v2.7.0)
+## Full 2.8 Zip File including just .exe-Files now available as a release!
+[Click here!](https://github.com/lucaw9/f_tool_amenti/releases/tag/v2.8.0)
 
 
 [AutoIt]: https://www.autoitscript.com/
@@ -56,6 +56,11 @@ Development since then by Amenti
 
 ## 2.7
 - Added setting for key input loop time: Less time equals faster reaction of the tool but more cpu usage. Default: 100 ms
+
+## 2.8
+- Added sounds for spammer start and stop and presser
+- Enable and configure them in settings
+- Add your own soundfiles in Sounds folder
 
 ## Built With
 AutoIt v3.3.14.5

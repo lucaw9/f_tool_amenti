@@ -1,9 +1,9 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=Resources\aibatt.ico
 #AutoIt3Wrapper_Res_Description=FTool by Amenti
-#AutoIt3Wrapper_Res_Fileversion=2.7
+#AutoIt3Wrapper_Res_Fileversion=2.8
 #AutoIt3Wrapper_Res_ProductName=FTool by Amenti
-#AutoIt3Wrapper_Res_ProductVersion=2.7
+#AutoIt3Wrapper_Res_ProductVersion=2.8
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
 ; Mandatory execution as administrator
@@ -22,7 +22,7 @@ Opt("TrayMenuMode", 1) ; Disable default tray menu
 Opt("TrayOnEventMode", 1) ; Enable OnEvent functions notifications for the tray
 
 ; GUI Window variables
-Local const $sTitle = "FTool by Amenti 2.7"
+Local const $sTitle = "FTool by Amenti 2.8"
 Local $iWinWidth = 286
 Local $iWinHeight = 420
 Local $iWinLeft = -1
@@ -33,6 +33,10 @@ Local $iHotkeyBaseSpam = ""
 Local $iHotkeyBasePress = ""
 Local $bSettingsOpen = False
 Global $iKeyLoopTime = 100
+Global $bSoundsEnabled = 0
+Global $sSoundFileSpamStart = ""
+Global $sSoundFileSpamStop = ""
+Global $sSoundFilePresser = ""
 
 ; Colors
 Global $COLOR_GREEN = 0x0f801b
@@ -49,6 +53,7 @@ _ReadRows($iRows)
 _ReadKeyLoopTime($iKeyLoopTime)
 Global $g_Tabs = _getTabArray() ; Two-dimensional: [ArrayNumber][0 = Name, 1 = Spammers, 2 = MultiPressers]
 _ReadHotkeyBase($iHotkeyBaseSpam, $iHotkeyBasePress)
+_ReadSounds($bSoundsEnabled, $sSoundFileSpamStart, $sSoundFileSpamStop, $sSoundFilePresser)
 
 Local $iMaxDepth = 1
 Local $iMaxRows = 1

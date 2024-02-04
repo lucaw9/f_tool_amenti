@@ -50,6 +50,13 @@ Func _ReadHotkeyBase(ByRef $iHotkeyBaseSpam, ByRef $iHotkeyBasePress)
    $iHotkeyBasePress = IniRead($sFilePath, "General", "HotkeyBasePresser", "000000A0")
 EndFunc
 
+Func _ReadSounds(ByRef $SoundsEnabled, ByRef $SoundFileSpamStart, ByRef $SoundFileSpamStop, ByRef $SoundFilePresser)
+   $SoundsEnabled = IniRead($sFilePath, "General", "SoundsEnabled", 0)
+   $SoundFileSpamStart = IniRead($sFilePath, "General", "SoundSpamStart", "750hz.mp3")
+   $SoundFileSpamStop = IniRead($sFilePath, "General", "SoundSpamStop", "350hz.mp3")
+   $SoundFilePresser = IniRead($sFilePath, "General", "SoundPresser", "500hz.mp3")
+EndFunc
+
 Func _getTabArray()
    Local $tab_count = IniRead($sFilePath, "General", "Tabs", 2)
    Local $array[$tab_count][3]
@@ -184,7 +191,7 @@ Local $SettingsRows
 Func _OnSettingsClick()
    $bSettingsOpen = True
 
-   Local $iSettingsHeight = 630
+   Local $iSettingsHeight = 763
    Local $iSettingsWidth = 286
 
    $hSettingsGUI = GUICreate("Settings", $iSettingsWidth, $iSettingsHeight, WinGetPos($hMainGUI)[0], WinGetPos($hMainGUI)[1]+50)
@@ -196,7 +203,9 @@ Func _OnSettingsClick()
 
    ; List
    $SettingsTabListContent = _ReadTabListContent()
+   GUISetFont(9, 800)
    GUICtrlCreateLabel("Tabs", 20, 16)
+   GUISetFont(9, 400)
    GUICtrlSetColor(-1, $COLOR_WHITE)
    GUICtrlSetBkColor(-1, $COLOR_DARK2)
    $SettingsTabList = GUICtrlCreateList("", $iCol1, 36, 200, 100, BitOr($WS_BORDER, $WS_VSCROLL)) ; omit $LBS_SPRT style to not have it sorted alpabetically
@@ -230,7 +239,9 @@ Func _OnSettingsClick()
    ; Orientation Radio
    $SettingsOrientation = IniRead($sFilePath, "General", "Orientation", "vertical")
    Local $OrientationY = 182
+   GUISetFont(9, 800)
    GUICtrlCreateLabel("Orientation", 20, $OrientationY)
+   GUISetFont(9, 400)
    GUICtrlSetColor(-1, $COLOR_WHITE)
    GUICtrlSetBkColor(-1, $COLOR_DARK2)
 
@@ -261,7 +272,7 @@ Func _OnSettingsClick()
    $SettingsRowsCombo = GUICtrlCreateCombo("", $iCol2 + 100, $OrientationY + 38, 36, 12, $CBS_DROPDOWNLIST)
    $SettingsRows = IniRead($sFilePath, "General", "Rows", 1)
    GUICtrlSetData($SettingsRowsCombo, "1|2|3|4|5|6|7|8|9", $SettingsRows)
-   GUICtrlCreateLabel("Direction and Rows for spammers and pressers." & @CRLF & "Example: 8 spammers vertical with 2 rows will make a" & @CRLF & "grid of width 2 and height 4.", $iCol1, $OrientationY + 62)
+   GUICtrlCreateLabel("Direction and Rows for spammers and " & @CRLF & "pressers. Example: 8 spammers vertical with " & @CRLF & "2 rows will make a grid of width 2 and height 4.", $iCol1, $OrientationY + 62)
    GUICtrlSetColor(-1, $COLOR_WHITE)
    GUICtrlSetBkColor(-1, $COLOR_DARK2)
 
@@ -269,7 +280,9 @@ Func _OnSettingsClick()
    Local $WindowNameY = 300
    Local $WindowNameIni = IniRead($sFilePath, "General", "WindowName", "; - Forsaken Kingdom")
 
+   GUISetFont(9, 800)
    GUICtrlCreateLabel("Window Name", $iCol1, $WindowNameY)
+   GUISetFont(9, 400)
    GUICtrlSetColor(-1, $COLOR_WHITE)
    GUICtrlSetBkColor(-1, $COLOR_DARK2)
    $SettingsWindowName = GUICtrlCreateInput($WindowNameIni, $iCol1, $WindowNameY + 20, 250, 20)
@@ -284,7 +297,9 @@ Func _OnSettingsClick()
    Local $HotkeysY = 410
 
    ; Label
+   GUISetFont(9, 800)
    GUICtrlCreateLabel("Base key for the hotkeys", $iCol1, $HotkeysY - 20)
+   GUISetFont(9, 400)
    GUICtrlSetColor(-1, $COLOR_WHITE)
    GUICtrlSetBkColor(-1, $COLOR_DARK2)
 
@@ -312,11 +327,61 @@ Func _OnSettingsClick()
    GUICtrlSetColor(-1, $COLOR_WHITE)
    GUICtrlSetBkColor(-1, $COLOR_DARK1)
 
+   ; Sounds
+   Local $SoundsY = 465
+   ; Press
+   GUISetFont(9, 800)
+   GUICtrlCreateLabel("Sounds ", $iCol1, $SoundsY)
+   GUISetFont(9, 400)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+
+   Global $SoundsEnabledCheckbox = GUICtrlCreateCheckbox("", $iCol1, $SoundsY + 17, 20, 20)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+   GUICtrlSetState($SoundsEnabledCheckbox, $bSoundsEnabled)
+   GUICtrlCreateLabel("Enabled", $iCol1 + 20, $SoundsY + 20)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+
+   GUICtrlCreateLabel("Spam Start: ", $iCol1, $SoundsY + 48)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+   Global $u_SpammerStartSound = GUICtrlCreateLabel($sSoundFileSpamStart, $iCol1 + 80, $SoundsY + 48, 100)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+   GUICtrlCreateButton("Edit", $iCol3 - 40, $SoundsY + 48, 44, 20)
+   GUICtrlSetOnEvent(-1, "_OnSettingsButtonSoundsClickSpammerStart")
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK1)
+
+   GUICtrlCreateLabel("Spam Stop: ", $iCol1, $SoundsY + 76)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+   Global $u_SpammerStopSound = GUICtrlCreateLabel($sSoundFileSpamStop, $iCol1 + 80, $SoundsY + 76, 100)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+   GUICtrlCreateButton("Edit", $iCol3 - 40, $SoundsY + 76, 44, 20)
+   GUICtrlSetOnEvent(-1, "_OnSettingsButtonSoundsClickSpammerStop")
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK1)
+
+   GUICtrlCreateLabel("Presser: ", $iCol1, $SoundsY + 104)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+   Global $u_PresserSound = GUICtrlCreateLabel($sSoundFilePresser, $iCol1 + 80, $SoundsY + 104, 100)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+   GUICtrlCreateButton("Edit", $iCol3 - 40, $SoundsY + 104, 44, 20)
+   GUICtrlSetOnEvent(-1, "_OnSettingsButtonSoundsClickPresser")
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK1)
 
    ; KeyLoopTime
-   Local $KeyLoopTimeY = 465
+   Local $KeyLoopTimeY = 598
 
+   GUISetFont(9, 800)
    GUICtrlCreateLabel("Key Loop Time", $iCol1, $KeyLoopTimeY)
+   GUISetFont(9, 400)
    GUICtrlSetColor(-1, $COLOR_WHITE)
    GUICtrlSetBkColor(-1, $COLOR_DARK2)
    Global $KeyLoopTimeInput = GUICtrlCreateInput($iKeyLoopTime, $iCol1, $KeyLoopTimeY + 20, 250, 20)
@@ -328,12 +393,7 @@ Func _OnSettingsClick()
 
 
    ; Buttons at Bottom
-   Local $ButtonsY = 590
-
-   ; Restart Label
-   GUICtrlCreateLabel("Most changes will only take effect after" & @CRLF & "restarting the tool!", $iCol1, $ButtonsY - 20)
-   GUICtrlSetColor(-1, $COLOR_WHITE)
-   GUICtrlSetBkColor(-1, $COLOR_DARK2)
+   Local $ButtonsY = 723
 
    ; Save button
    GUICtrlCreateButton("Save", 140, $ButtonsY, 60, 30)
@@ -346,6 +406,11 @@ Func _OnSettingsClick()
    GUICtrlSetOnEvent(-1, "_ExitSettings")
    GUICtrlSetColor(-1, $COLOR_WHITE)
    GUICtrlSetBkColor(-1, $COLOR_DARK1)
+
+   ; Restart Label
+   GUICtrlCreateLabel("Most changes will" & @CRLF & "only take effect after" & @CRLF & "restarting the tool!", $iCol1, $ButtonsY - 16)
+   GUICtrlSetColor(-1, $COLOR_WHITE)
+   GUICtrlSetBkColor(-1, $COLOR_DARK2)
 
    ; Display the GUI
    GUISetState(@SW_SHOW, $hSettingsGUI)
@@ -481,6 +546,18 @@ Func _OnSettingsButtonClickSave()
    Else
 	  MsgBox(0, "Invalid inputs!", "Inputs can't be empty.")
    EndIf
+   Local $SoundsEnabledCheckboxState = GUICtrlRead($SoundsEnabledCheckbox)
+   $bSoundsEnabled = $SoundsEnabledCheckboxState
+   IniWrite($sFilePath, "General", "SoundsEnabled", $SoundsEnabledCheckboxState)
+   Local $SoundSpammerStart = GUICtrlRead($u_SpammerStartSound)
+   $sSoundFileSpamStart = $SoundSpammerStart
+   IniWrite($sFilePath, "General", "SoundSpamStart", $SoundSpammerStart)
+   Local $SoundSpammerStop = GUICtrlRead($u_SpammerStopSound)
+   $sSoundFileSpamStop = $SoundSpammerStop
+   IniWrite($sFilePath, "General", "SoundSpamStop", $SoundSpammerStop)
+   Local $SoundPresser = GUICtrlRead($u_PresserSound)
+   $sSoundFilePresser = $SoundPresser
+   IniWrite($sFilePath, "General", "SoundPresser", $SoundPresser)
 EndFunc   ;==>_OnSettingsButtonClickSave
 
 Func _OnOrientationClickVertical()
@@ -490,6 +567,33 @@ EndFunc   ;==>_OnOrientationClickVertical
 Func _OnOrientationClickHorizontal()
    $SettingsOrientation = "horizontal"
 EndFunc   ;==>_OnOrientationClickHorizontal
+
+Func _OnSettingsButtonSoundsClickSpammerStart()
+   SetNewSoundLabel($u_SpammerStartSound)
+EndFunc
+
+Func _OnSettingsButtonSoundsClickSpammerStop()
+   SetNewSoundLabel($u_SpammerStopSound)
+EndFunc
+
+Func _OnSettingsButtonSoundsClickPresser()
+   SetNewSoundLabel($u_PresserSound)
+EndFunc
+
+Func SetNewSoundLabel($GUIControlId)
+   Local $soundPath = @ScriptDir & "\Sounds\"
+   Local $sFileOpenDialog = FileOpenDialog("Pick a new sound", $soundPath, "Audio (*.mp3)")
+   If $sFileOpenDialog <> "" Then
+	  If not @error Then
+		 If StringInStr($sFileOpenDialog, $soundPath) <> 0 Then
+			Local $iFilename = StringReplace($sFileOpenDialog, $soundPath, "") ; convert dir to filename
+			GUICtrlSetData($GUIControlId, $iFilename)
+		 Else
+			MsgBox(0, "Invalid path!", "File has to be located in Sounds folder!")
+		 EndIf
+	  EndIf
+   EndIf
+EndFunc
 
 Func _HexToKey($hex)
    $SettingsOrientation = "horizontal"

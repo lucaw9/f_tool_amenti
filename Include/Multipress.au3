@@ -10,7 +10,7 @@ Func _OnButtonClickMultiPress($index = -1)
 	  $iPressIndex = GUICtrlRead(@GUI_CtrlId - 2)
    EndIf
   ; Press
-  _MultiPressButtonFlash($iPressIndex)
+
   _MultiPress($iPressIndex)
 EndFunc   ;==>_OnButtonClick
 
@@ -18,7 +18,11 @@ Func _MultiPressButtonFlash($iPressIndex)
   ; Press
   Local $iButtonCtrlId = $g_aMultiPressers[$iPressIndex][$g_eSpamButton]
   GUICtrlSetBkColor($iButtonCtrlId, $COLOR_GREEN)
-  Sleep(50)
+  ; play Beep
+  If ($bSoundsEnabled) Then
+     SoundPlay(@ScriptDir & "\Sounds\" & $sSoundFilePresser, 0)
+  EndIf
+  Sleep(100)
   GUICtrlSetBkColor($iButtonCtrlId, $COLOR_DARK1)
 EndFunc   ;==>_MultiPressButtonFlash
 
@@ -169,6 +173,9 @@ Func _MultiPress($iIndex)
 		 Local $sParams = $iMainPID & ' "' & $hWindow & '" "' & $sFKey & '" "' & $sSkill & '" "' & $sReturnSkill & '"'
 		 Run($sPresserFile & ' ' & $sParams)
 	  EndIf
-  Next
+   Next
+
+  ; flash button
+  _MultiPressButtonFlash($iIndex)
 
 EndFunc   ;==>_MultiPress

@@ -141,6 +141,10 @@ Func _SpamStart($iSpamIndex)
   GUICtrlSetState($iIcon1, $GUI_DISABLE)
 
   GUICtrlSetBkColor($iButtonCtrlId, $COLOR_GREEN)
+  ; play Beep
+  If ($bSoundsEnabled) Then
+    SoundPlay(@ScriptDir & "\Sounds\" & $sSoundFileSpamStart, 0)
+  EndIf
 
   ; Get main window PID
   Local $iMainPID = WinGetProcess($hMainGUI)
@@ -194,4 +198,8 @@ Func _SpamStop($iSpamIndex)
   GUICtrlSetState($iIcon1, $GUI_ENABLE)
 
   GUICtrlSetBkColor($iButtonCtrlId, $COLOR_DARK1)
+  ; play Beep
+  If ($bSoundsEnabled) Then
+    SoundPlay(@ScriptDir & "\Sounds\" & $sSoundFileSpamStop, 0)
+  EndIf
 EndFunc   ;==>_SpamStop
